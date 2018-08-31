@@ -26,23 +26,33 @@ type CombineOutput<Props extends CombineProps> = {
 
 type FirstArgumentType<T extends (output: any) => React.ReactElement<any>> = T extends (output: infer O) => React.ReactElement<any> ? O : never
 
+type Writeable<T extends { [x: string]: any }, K extends string> = {
+  [P in K]: T[P];
+}
+
 export class Combine<Props extends CombineProps> extends React.Component<Props & { children: (props: CombineOutput<Props>) => React.ReactElement<any> }> {
   render() {
     let children = this.props.children
-    let controllerRenderers = {}
-
-    let propNames = Object.keys(controllerRenderers)
-
+    let controllerRenderers: Props = {} as any
+    let propNames = Object.keys(this.props)
+    let controllerNames: string[] = []
     for (let i = 0; i < propNames.length; i++) {
       let propName = propNames[i]
-      let controller = controllerRenderers[propName]
-      if (typeof controller !== 'function') {
-        controllerRenderers[propName] = (children) => React.cloneElement(controller, { children })
+      if (propName !== 'children') {
+        controllerNames.push(propName)
+        let controller = this.props[propName]
+        if (typeof controller !== 'function') {
+          // Support passing controller elements directly when not using TypeScript.
+          controllerRenderers[propName] = (children) => React.cloneElement(controller as any, { children })
+        }
+        else {
+          controllerRenderers[propName] = <any>controller
+        }
       }
     }
 
-    let controller = controllerRenderers[propNames[0]]
-    let finalRenderer = output => renderer(propNames, controllerRenderers, children, undefined, output)
+    let controller = controllerRenderers[controllerNames[0]]
+    let finalRenderer = output => renderer(controllerNames, controllerRenderers, children, undefined, output)
     return controller(finalRenderer)
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "react-controllers",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Utilities for creating React controller components",
   "author": "James K Nelson <james@frontarm.com>",
   "license": "MIT",
@@ -32,11 +32,33 @@
     "cross-env": "^5.0.5",
     "jest": "^22.1.4",
     "react": "^16.4.1",
+    "react-test-renderer": "^16.4.2",
     "rimraf": "^2.6.2",
     "rollup": "^0.50.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "ts-jest": "^22.0.1",
     "typescript": "^3.0.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testEnvironment": "node",
+    "testURL": "http://localhost/",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "globals": {
+      "__DEV__": true,
+      "ts-jest": {
+        "skipBabel": true
+      }
+    }
   }
 }

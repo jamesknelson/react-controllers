@@ -11,15 +11,15 @@ npm install react-controllers --save
 
 ## React Controllers
 
-A [controller](https://frontarm.com/articles/controller-components/) is a term for a React components that follows three rules:
+A [controller](https://frontarm.com/articles/controller-components/) is a term for a React components that follow three rules:
 
 - It expects to receive a **render function** via its `children` prop
-- It passes an **output object** to that render function with state and actions
+- It passes an **output object** to that render function
 - It does not define `shouldComponentUpdate` or `PureComponent`
 
 For example:
 
-```js
+```jsx
 render() {
   return (
     <AuthController>
@@ -38,11 +38,11 @@ Some common controllers include the `<Consumer>` component of React's [Context A
 When composing a number of controllers, you'll encounter the **controller mountain** problem: whitespace starts stacking up in a way reminiscent of callback pyramids.
 
 ```js
-<AuthController children={children}>
+<AuthController>
   {auth =>
-    <NavContext.Consumer children={children}>
+    <NavContext.Consumer>
       {nav =>
-        <StoreContext.Consumer children={children}>
+        <StoreContext.Consumer>
           {store =>
             <MyScreen auth={auth} nav={nav} store={store} />
           }
@@ -55,30 +55,18 @@ When composing a number of controllers, you'll encounter the **controller mounta
 
 The `<Combine>` controller solves this by combining controllers together.
 
-Each prop for `<Combine>` should be a function that returns a controller element. For example:
+Each prop for `<Combine>` should be a function that returns a controller element. It then threads the outputs of each controller into the output of its own `children` function. For example, the above could be rewritten as:
 
 ```js
 import { Combine } from 'react-controllers'
 
 <Combine
   auth={children => <AuthController children={children} />}
->
-```
-
-It then threads the outputs of each controller into the output of its own `children` function. 
-
-```js
-<Combine
-  auth={children => <AuthController children={children} />}
   nav={children => <NavContext.Consumer children={children} />}
   store={children => <StoreContext.Consumer children={children} />}
 >
-  {output => {
-    console.log('output of `<AuthController>`', output.auth)
-    console.log('output of `<NavContext.Consumer>`', output.nav)
-    console.log('output of `<StoreContext.Consumer>`', output.store)
-
-    return <MyScreen {...output} />
-  }}
+  {output =>
+    <MyScreen {...output} />
+  }
 </Combine>
 ```
