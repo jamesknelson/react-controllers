@@ -10,7 +10,7 @@ const env = process.env.BUILD_ENV
 
 const config = {
   input: 'dist/raw/index.js',
-  name: 'Govern',
+  name: 'ReactControllers',
   plugins: []
 }
 
